@@ -53,9 +53,10 @@ export function formatCommandHelp(cmd: CommandDef): string {
   if (cmd.flags.length > 0) {
     const globalFlags = cmd.flags.filter(f => !f.name.startsWith("[subcommand]"));
     if (globalFlags.length > 0) {
-      lines.push("");
       for (const flag of globalFlags) {
-        lines.push(formatFlagHelp(flag));
+        const aliases = flag.aliases?.length ? ` (${flag.aliases.join(", ")})` : "";
+        lines.push(`    ${flag.name}${aliases}`);
+        lines.push(`      ${flag.description}`);
       }
     }
   }

@@ -79,7 +79,7 @@ const COMMANDS: CommandDef[] = [
     description: "Manage RTM lists",
     example: "rtm lists [subcommand] [args]",
     flags: [
-      { name: "--help, -h", description: "Show help for lists subcommands" },
+      { name: "--help, -h", description: "Show detailed help for lists subcommands" },
     ],
     subcommands: [
       {
@@ -134,7 +134,7 @@ const COMMANDS: CommandDef[] = [
     description: "Manage RTM tasks and notes",
     example: "rtm tasks [subcommand] [args]",
     flags: [
-      { name: "--help, -h", description: "Show help for tasks subcommands" },
+      { name: "--help, -h", description: "Show detailed help for tasks subcommands" },
     ],
     subcommands: [
       {
@@ -208,7 +208,7 @@ const COMMANDS: CommandDef[] = [
     description: "Manage RTM tags",
     example: "rtm tags [subcommand] [args]",
     flags: [
-      { name: "--help, -h", description: "Show help for tags subcommands" },
+      { name: "--help, -h", description: "Show detailed help for tags subcommands" },
     ],
     subcommands: [
       {
