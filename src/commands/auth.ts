@@ -32,7 +32,7 @@ const AUTH_URL = "https://www.rememberthemilk.com/services/auth/";
 interface AuthFlags {
   json: boolean;
   force: boolean;
-  raw: boolean;
+  showSecrets: boolean;
   purge: boolean;
   noOpen: boolean;
   perms: string;
@@ -45,7 +45,7 @@ function parseAuthFlags(): AuthFlags {
   const result: AuthFlags = {
     json: false,
     force: false,
-    raw: false,
+    showSecrets: false,
     purge: false,
     noOpen: false,
     perms: "delete",
@@ -60,8 +60,8 @@ function parseAuthFlags(): AuthFlags {
       case "--force":
         result.force = true;
         break;
-      case "--raw":
-        result.raw = true;
+      case "--show-secrets":
+        result.showSecrets = true;
         break;
       case "--purge":
         result.purge = true;
@@ -282,7 +282,7 @@ async function showCmd(flags: AuthFlags): Promise<void> {
   }
 
   const mask = (s: string): string => {
-    if (flags.raw) return s;
+    if (flags.showSecrets) return s;
     if (s.length <= 8) return "****";
     return s.slice(0, 4) + "..." + s.slice(-4);
   };
@@ -295,7 +295,7 @@ async function showCmd(flags: AuthFlags): Promise<void> {
   console.log(`Shared Secret: ${mask(config.sharedSecret)}`);
   console.log(`Auth Token: ${config.authToken ? mask(config.authToken) : "(not set)"}`);
 
-  if (flags.raw) {
+  if (flags.showSecrets) {
     console.log("\n⚠️  WARNING: Secrets are displayed in plaintext!");
   }
 }

@@ -55,10 +55,10 @@ const COMMANDS: CommandDef[] = [
       },
       {
         name: "show",
-        args: "[--raw]",
+        args: "[--show-secrets]",
         description: "Display current configuration (secrets masked by default)",
         flags: [
-          { name: "--raw", description: "Show unmasked secrets (use with caution)" },
+          { name: "--show-secrets", description: "Show unmasked secrets (use with caution)" },
         ],
       },
       {
