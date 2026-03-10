@@ -169,7 +169,7 @@ const COMMANDS: CommandDef[] = [
       { name: "done", args: "<id...>", description: "Complete task(s) by ID" },
       { name: "undo", args: "<id...>", description: "Uncomplete task(s) by ID" },
       { name: "delete", args: "<id...>", description: "Delete task(s) by ID" },
-      { name: "post", args: "<id...>", description: "Postpone task(s) by one day" },
+      { name: "postpone", args: "<id...>", description: "Postpone task(s) by one day" },
       {
         name: "move",
         args: "<list-id> <task-id...>",
