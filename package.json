@@ -1,7 +1,7 @@
 {
-  "name": "rtm",
+  "name": "@emmertarmin/rtm-cli",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
   "description": "A CLI tool for Remember The Milk task management",
   "keywords": [
     "cli",
@@ -22,7 +22,7 @@
     "url": "git+https://github.com/emmertarmin/rtm-cli.git"
   },
   "bin": {
-    "rtm": "./dist/index.js"
+    "rtm": "dist/index.js"
   },
   "files": [
     "dist/**/*.js",
@@ -30,6 +30,7 @@
   ],
   "type": "module",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "bun -e \"import p from './package.json' with {type:'json'}; await Bun.write('src/version.ts', 'export const VERSION = \\\"' + p.version + '\\\";\\n')\"",
     "build": "bun build index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly",
@@ -37,7 +38,6 @@
     "prepublishOnly": "npm run build",
     "start": "bun run index.ts"
   },
-  "dependencies": {},
   "devDependencies": {
     "@types/bun": "latest",
     "bun-types": "^1.3.10",
