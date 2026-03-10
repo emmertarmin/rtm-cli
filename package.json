@@ -1,0 +1,19 @@
+{
+  "name": "rtm",
+  "version": "1.0.0",
+  "private": true,
+  "bin": {
+    "rtm": "./index.ts"
+  },
+  "type": "module",
+  "module": "index.ts",
+  "scripts": {
+    "tsc": "tsc --noEmit",
+    "build": "bun build index.ts --outdir ./dist",
+    "start": "bun run index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5"
+  }
+}
