@@ -1,5 +1,5 @@
 /**
- * Items Command - Task management for RTM
+ * Tasks Command - Task management for RTM
  *
  * Handles listing, adding, completing, and modifying tasks.
  */
@@ -32,9 +32,9 @@ interface TaskDisplay {
 }
 
 /**
- * Command options for the items command
+ * Command options for the tasks command
  */
-export interface ItemsOptions extends TaskFilterOptions {
+export interface TasksOptions extends TaskFilterOptions {
   format?: OutputFormat;
 }
 
@@ -95,7 +95,7 @@ function parseTasks(response: {
 /**
  * Build RTM filter string from options
  */
-function buildFilter(options: ItemsOptions): string | undefined {
+function buildFilter(options: TasksOptions): string | undefined {
   const filters: string[] = [];
 
   // Status filter
@@ -176,7 +176,7 @@ function sortTasks(tasks: TaskDisplay[], sortBy: string): TaskDisplay[] {
  */
 export async function listTasks(
   client: RTMClient,
-  options: ItemsOptions = {},
+  options: TasksOptions = {},
 ): Promise<TaskDisplay[]> {
   const filter = buildFilter(options);
   const response = await client.getTasks({
@@ -707,8 +707,8 @@ export function formatNotesAsMarkdown(notes: RTMNote[], taskName?: string): stri
   return markdown;
 }
 
-function showItemsHelp(): void {
-  console.log(`Usage: rtm items [subcommand] [args] [flags]
+function showTasksHelp(): void {
+  console.log(`Usage: rtm tasks [subcommand] [args] [flags]
 
 Subcommands:
   (none)              List tasks (default: pending only)
@@ -747,25 +747,25 @@ Add Flags:
   --parse             Enable smart add parsing
 
 Examples:
-  rtm items
-  rtm items --due today
-  rtm items add "Buy milk" --due tomorrow --priority 2 --tags shopping
-  rtm items add "Meeting ^tomorrow !1 #work"
-  rtm items done 602989903
-  rtm items post 602989903
-  rtm items move 43438794 602989903
-  rtm items priority 1 602989903 602989904
-  rtm items notes 602989903
-  rtm items note add 602989903 "Price check" "Found at MediaMarkt for 129€"
-  rtm items note delete 123456789
+  rtm tasks
+  rtm tasks --due today
+  rtm tasks add "Buy milk" --due tomorrow --priority 2 --tags shopping
+  rtm tasks add "Meeting ^tomorrow !1 #work"
+  rtm tasks done 602989903
+  rtm tasks post 602989903
+  rtm tasks move 43438794 602989903
+  rtm tasks priority 1 602989903 602989904
+  rtm tasks notes 602989903
+  rtm tasks note add 602989903 "Price check" "Found at MediaMarkt for 129€"
+  rtm tasks note delete 123456789
 `);
 }
 
 /**
  * Parse listing flags from argv (original args including flags with values)
  */
-function parseListFlags(argv: string[]): ItemsOptions {
-  const options: ItemsOptions = {};
+function parseListFlags(argv: string[]): TasksOptions {
+  const options: TasksOptions = {};
 
   // Scan through argv to find flag-value pairs
   for (let i = 0; i < argv.length; i++) {
@@ -778,17 +778,17 @@ function parseListFlags(argv: string[]): ItemsOptions {
         break;
       case "--status":
         if (nextArg && ["pending", "completed", "all"].includes(nextArg)) {
-          options.status = nextArg as ItemsOptions["status"];
+          options.status = nextArg as TasksOptions["status"];
         }
         break;
       case "--due":
         if (nextArg && ["today", "tomorrow", "week", "overdue", "none", "all"].includes(nextArg)) {
-          options.due = nextArg as ItemsOptions["due"];
+          options.due = nextArg as TasksOptions["due"];
         }
         break;
       case "--priority":
         if (nextArg && ["1", "2", "3", "N", "any"].includes(nextArg)) {
-          options.priority = nextArg as ItemsOptions["priority"];
+          options.priority = nextArg as TasksOptions["priority"];
         }
         break;
       case "--tag":
@@ -802,7 +802,7 @@ function parseListFlags(argv: string[]): ItemsOptions {
         break;
       case "--sort":
         if (nextArg && ["due", "priority", "name", "added"].includes(nextArg)) {
-          options.sort = nextArg as ItemsOptions["sort"];
+          options.sort = nextArg as TasksOptions["sort"];
         }
         break;
       case "--limit":
@@ -818,7 +818,7 @@ function parseListFlags(argv: string[]): ItemsOptions {
 }
 
 /**
- * Execute the items command
+ * Execute the tasks command
  */
 export async function execute(
   client: RTMClient,
@@ -830,7 +830,7 @@ export async function execute(
 
   // Show help only for explicit help flags
   if (subcommand === "--help" || subcommand === "-h") {
-    showItemsHelp();
+    showTasksHelp();
     return;
   }
 
@@ -876,7 +876,7 @@ export async function execute(
       const name = args[1];
       if (!name) {
         console.error("Error: Task name required");
-        console.error("Usage: rtm items add <name> [flags]");
+        console.error("Usage: rtm tasks add <name> [flags]");
         process.exit(1);
       }
 
@@ -950,7 +950,7 @@ export async function execute(
       const ids = args.slice(1);
       if (ids.length === 0) {
         console.error("Error: Task ID(s) required");
-        console.error("Usage: rtm items done <id> [id...]");
+        console.error("Usage: rtm tasks done <id> [id...]");
         process.exit(1);
       }
 
@@ -973,7 +973,7 @@ export async function execute(
       const ids = args.slice(1);
       if (ids.length === 0) {
         console.error("Error: Task ID(s) required");
-        console.error("Usage: rtm items undo <id> [id...]");
+        console.error("Usage: rtm tasks undo <id> [id...]");
         process.exit(1);
       }
 
@@ -996,7 +996,7 @@ export async function execute(
       const ids = args.slice(1);
       if (ids.length === 0) {
         console.error("Error: Task ID(s) required");
-        console.error("Usage: rtm items delete <id> [id...]");
+        console.error("Usage: rtm tasks delete <id> [id...]");
         process.exit(1);
       }
 
@@ -1019,7 +1019,7 @@ export async function execute(
       const ids = args.slice(1);
       if (ids.length === 0) {
         console.error("Error: Task ID(s) required");
-        console.error("Usage: rtm items post <id> [id...]");
+        console.error("Usage: rtm tasks post <id> [id...]");
         process.exit(1);
       }
 
@@ -1043,7 +1043,7 @@ export async function execute(
       const ids = args.slice(2);
       if (!toListId || ids.length === 0) {
         console.error("Error: Target list ID and task ID(s) required");
-        console.error("Usage: rtm items move <list-id> <task-id> [task-id...]");
+        console.error("Usage: rtm tasks move <list-id> <task-id> [task-id...]");
         process.exit(1);
       }
 
@@ -1067,7 +1067,7 @@ export async function execute(
       const ids = args.slice(2);
       if (!["1", "2", "3", "N"].includes(priority) || ids.length === 0) {
         console.error("Error: Priority (1, 2, 3, N) and task ID(s) required");
-        console.error("Usage: rtm items priority <1|2|3|N> <id> [id...]");
+        console.error("Usage: rtm tasks priority <1|2|3|N> <id> [id...]");
         process.exit(1);
       }
 
@@ -1091,7 +1091,7 @@ export async function execute(
       const ids = args.slice(2);
       if (!due || ids.length === 0) {
         console.error("Error: Due date and task ID(s) required");
-        console.error("Usage: rtm items due <date> <id> [id...]");
+        console.error("Usage: rtm tasks due <date> <id> [id...]");
         process.exit(1);
       }
 
@@ -1128,7 +1128,7 @@ export async function execute(
       const ids = args.slice(2);
       if (!tag || ids.length === 0) {
         console.error("Error: Tag and task ID(s) required");
-        console.error("Usage: rtm items tag <tag> <id> [id...]");
+        console.error("Usage: rtm tasks tag <tag> <id> [id...]");
         process.exit(1);
       }
 
@@ -1152,7 +1152,7 @@ export async function execute(
       const ids = args.slice(2);
       if (!tag || ids.length === 0) {
         console.error("Error: Tag and task ID(s) required");
-        console.error("Usage: rtm items untag <tag> <id> [id...]");
+        console.error("Usage: rtm tasks untag <tag> <id> [id...]");
         process.exit(1);
       }
 
@@ -1175,7 +1175,7 @@ export async function execute(
       const id = args[1];
       if (!id) {
         console.error("Error: Task ID required");
-        console.error("Usage: rtm items notes <id>");
+        console.error("Usage: rtm tasks notes <id>");
         process.exit(1);
       }
 
@@ -1198,7 +1198,7 @@ export async function execute(
       const noteSubcommand = args[1];
 
       if (!noteSubcommand || noteSubcommand === "--help" || noteSubcommand === "-h") {
-        console.log(`Usage: rtm items note <subcommand> [args]
+        console.log(`Usage: rtm tasks note <subcommand> [args]
 
 Subcommands:
   add <task-id> <title> <text>  Add note to a task
@@ -1214,7 +1214,7 @@ Subcommands:
         const text = args[4];
         if (!id || !title || !text) {
           console.error("Error: Task ID, note title, and note text required");
-          console.error("Usage: rtm items note add <id> <title> <text>");
+          console.error("Usage: rtm tasks note add <id> <title> <text>");
           process.exit(1);
         }
 
@@ -1233,7 +1233,7 @@ Subcommands:
         const noteId = args[2];
         if (!noteId) {
           console.error("Error: Note ID required");
-          console.error("Usage: rtm items note delete <note-id>");
+          console.error("Usage: rtm tasks note delete <note-id>");
           process.exit(1);
         }
 
@@ -1254,7 +1254,7 @@ Subcommands:
         const text = args[4];
         if (!noteId || !title || !text) {
           console.error("Error: Note ID, title, and text required");
-          console.error("Usage: rtm items note edit <note-id> <title> <text>");
+          console.error("Usage: rtm tasks note edit <note-id> <title> <text>");
           process.exit(1);
         }
 
@@ -1271,7 +1271,7 @@ Subcommands:
         }
       } else {
         console.error(`Unknown note subcommand: ${noteSubcommand}`);
-        console.error("Usage: rtm items note {add|delete|edit}");
+        console.error("Usage: rtm tasks note {add|delete|edit}");
         process.exit(1);
       }
       break;
@@ -1279,7 +1279,7 @@ Subcommands:
 
     default:
       console.error(`Unknown subcommand: ${subcommand}`);
-      showItemsHelp();
+      showTasksHelp();
       process.exit(1);
   }
 }

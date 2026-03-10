@@ -6,7 +6,7 @@
 import { VERSION } from "./src/version";
 import { RTMClient } from "./src/rtm";
 import * as listsCommand from "./src/commands/lists";
-import * as itemsCommand from "./src/commands/items";
+import * as tasksCommand from "./src/commands/tasks";
 import * as tagsCommand from "./src/commands/tags";
 import type { CommandDef, SubcommandDef } from "./src/cli";
 import { showHelp, showCommandHelp } from "./src/cli";
@@ -90,9 +90,9 @@ const COMMANDS: CommandDef[] = [
     },
   },
   {
-    name: "items",
+    name: "tasks",
     description: "Manage RTM tasks and notes (list, add, complete, delete, notes)",
-    example: "rtm items [subcommand] [args] [flags]",
+    example: "rtm tasks [subcommand] [args] [flags]",
     flags: [
       { name: "--json", description: "Output as JSON instead of markdown" },
       { name: "--list <id>", description: "Filter by list ID" },
@@ -103,7 +103,7 @@ const COMMANDS: CommandDef[] = [
       { name: "--filter <string>", description: "Raw RTM filter string" },
       { name: "--sort <field>", description: "due, priority, name (default: due)" },
       { name: "--limit <n>", description: "Max results" },
-      { name: "--help, -h", description: "Show help for items subcommands" },
+      { name: "--help, -h", description: "Show help for tasks subcommands" },
     ],
     subcommands: [
       { name: "(none)", description: "List tasks with optional filters (default: pending only)" },
@@ -139,7 +139,7 @@ const COMMANDS: CommandDef[] = [
     ],
     handler: async (client, flags, args) => {
       // Pass original argv for flag parsing, and processed args for subcommands
-      await itemsCommand.execute(client, args, flags);
+      await tasksCommand.execute(client, args, flags);
     },
   },
   {
