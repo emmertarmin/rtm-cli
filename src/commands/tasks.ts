@@ -716,7 +716,7 @@ Subcommands:
   done <id...>        Complete task(s)
   undo <id...>        Uncomplete task(s)
   delete <id...>      Delete task(s)
-  post <id...>        Postpone task(s) (+1 day)
+  postpone <id...>        Postpone task(s) (+1 day)
   move <list-id> <task-id...>  Move tasks to list
   priority <1|2|3|N> <id...>   Set priority on tasks
   due <date> <id...>  Set due date (ISO or "today", "tomorrow")
@@ -752,7 +752,7 @@ Examples:
   rtm tasks add "Buy milk" --due tomorrow --priority 2 --tags shopping
   rtm tasks add "Meeting ^tomorrow !1 #work"
   rtm tasks done 602989903
-  rtm tasks post 602989903
+  rtm tasks postpone 602989903
   rtm tasks move 43438794 602989903
   rtm tasks priority 1 602989903 602989904
   rtm tasks notes 602989903
@@ -842,7 +842,7 @@ export async function execute(
       "done",
       "undo",
       "delete",
-      "post",
+      "postpone",
       "move",
       "priority",
       "due",
@@ -1015,11 +1015,11 @@ export async function execute(
       break;
     }
 
-    case "post": {
+    case "postpone": {
       const ids = args.slice(1);
       if (ids.length === 0) {
         console.error("Error: Task ID(s) required");
-        console.error("Usage: rtm tasks post <id> [id...]");
+        console.error("Usage: rtm tasks postpone <id> [id...]");
         process.exit(1);
       }
 
