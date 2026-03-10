@@ -200,7 +200,7 @@ const COMMANDS: CommandDef[] = [
     ],
     handler: async (client, flags, args) => {
       // Pass original argv for flag parsing, and processed args for subcommands
-      await tasksCommand.execute(client, args, flags);
+      await tasksCommand.execute(client, args, flags, process.argv);
     },
   },
   {

@@ -889,37 +889,30 @@ export async function execute(
         parse: flags.has("--parse"),
       };
 
-      // Parse flags
-      const listIdx = args.indexOf("--list");
-      if (listIdx !== -1) {
-        const list = args[listIdx + 1];
-        if (list) addOptions.listId = list;
-      }
+      // Parse flags from argv (original args with flags)
+      for (let i = 0; i < argv.length; i++) {
+        const arg = argv[i];
+        const nextArg = argv[i + 1];
 
-      const dueIdx = args.indexOf("--due");
-      if (dueIdx !== -1) {
-        const due = args[dueIdx + 1];
-        if (due) addOptions.due = due;
-      }
-
-      const prioIdx = args.indexOf("--priority");
-      if (prioIdx !== -1) {
-        const p = args[prioIdx + 1];
-        if (p && ["1", "2", "3", "N"].includes(p)) {
-          addOptions.priority = p as "1" | "2" | "3" | "N";
+        switch (arg) {
+          case "--list":
+            if (nextArg) addOptions.listId = nextArg;
+            break;
+          case "--due":
+            if (nextArg) addOptions.due = nextArg;
+            break;
+          case "--priority":
+            if (nextArg && ["1", "2", "3", "N"].includes(nextArg)) {
+              addOptions.priority = nextArg as "1" | "2" | "3" | "N";
+            }
+            break;
+          case "--tags":
+            if (nextArg) addOptions.tags = nextArg;
+            break;
+          case "--estimate":
+            if (nextArg) addOptions.estimate = nextArg;
+            break;
         }
-      }
-
-      const tagsIdx = args.indexOf("--tags");
-      if (tagsIdx !== -1) {
-        const tags = args[tagsIdx + 1];
-        if (tags) addOptions.tags = tags;
-      }
-
-      const estIdx = args.indexOf("--estimate");
-      if (estIdx !== -1) {
-        const est = args[estIdx + 1];
-        if (est) addOptions.estimate = est;
       }
 
       // If no list specified, get inbox
