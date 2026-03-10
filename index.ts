@@ -20,45 +20,54 @@ const COMMANDS: CommandDef[] = [
     description:
       "Manage RTM authentication and API credentials (init, login, complete, status, show, logout)",
     example: "rtm auth <subcommand> [options]",
-    flags: [
-      { name: "--key <k>", description: "API key (for init subcommand)" },
-      { name: "--secret <s>", description: "Shared secret (for init subcommand)" },
-      { name: "--force", description: "Overwrite existing config (init)" },
-      {
-        name: "--perms <level>",
-        description: "Permission level: read|write|delete (login, default: delete)",
-      },
-      { name: "--no-open", description: "Don't auto-open browser (login)" },
-      { name: "--json", description: "Output as JSON (status)" },
-      { name: "--raw", description: "Show unmasked secrets (show, use with caution)" },
-      { name: "--purge", description: "Delete entire config (logout)" },
-      { name: "--help, -h", description: "Show help for auth subcommands" },
-    ],
+    flags: [],
     subcommands: [
       {
         name: "init",
         args: "[--key <k>] [--secret <s>] [--force]",
         description: "Configure API credentials interactively or via flags",
+        flags: [
+          { name: "--key <k>", description: "API key (optional, will prompt if not provided)" },
+          { name: "--secret <s>", description: "Shared secret (optional, will prompt if not provided)" },
+          { name: "--force", description: "Overwrite existing config" },
+        ],
       },
       {
         name: "login",
         args: "[--perms <level>] [--no-open]",
         description: "Start authentication flow, prints URL to visit",
+        flags: [
+          { name: "--perms <level>", description: "Permission level: read|write|delete (default: delete)" },
+          { name: "--no-open", description: "Don't auto-open browser" },
+        ],
       },
       {
         name: "complete",
         description: "Exchange frob for permanent auth token after browser approval",
       },
-      { name: "status", args: "[--json]", description: "Verify stored token is valid" },
+      {
+        name: "status",
+        args: "[--json]",
+        description: "Verify stored token is valid",
+        flags: [
+          { name: "--json", description: "Output as JSON" },
+        ],
+      },
       {
         name: "show",
         args: "[--raw]",
-        description: "Display current configuration (secrets masked)",
+        description: "Display current configuration (secrets masked by default)",
+        flags: [
+          { name: "--raw", description: "Show unmasked secrets (use with caution)" },
+        ],
       },
       {
         name: "logout",
         args: "[--purge]",
         description: "Remove auth token (or entire config with --purge)",
+        flags: [
+          { name: "--purge", description: "Delete entire config including API credentials" },
+        ],
       },
     ],
     handler: async (_client, flags, args) => {
@@ -68,19 +77,50 @@ const COMMANDS: CommandDef[] = [
   {
     name: "lists",
     description: "Manage RTM lists (list, add, rename, delete, archive, unarchive)",
-    example: "rtm lists [subcommand] [args] [--json] [--all]",
+    example: "rtm lists [subcommand] [args]",
     flags: [
-      { name: "--json", description: "Output as JSON instead of markdown" },
-      { name: "--all", description: "Include all items (deleted, archived)" },
       { name: "--help, -h", description: "Show help for lists subcommands" },
     ],
     subcommands: [
-      { name: "(none)", description: "List all lists (default)" },
-      { name: "add", args: "<name>", description: "Create a new list" },
-      { name: "rename", args: "<id> <name>", description: "Rename a list" },
-      { name: "delete", args: "<id>", description: "Delete a list" },
-      { name: "archive", args: "<id>", description: "Archive a list" },
-      { name: "unarchive", args: "<id>", description: "Unarchive a list" },
+      {
+        name: "(none)",
+        description: "List all lists (default)",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+          { name: "--all", description: "Include all items (deleted, archived)" },
+        ],
+      },
+      {
+        name: "add",
+        args: "<name>",
+        description: "Create a new list",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+        ],
+      },
+      {
+        name: "rename",
+        args: "<id> <name>",
+        description: "Rename a list",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+        ],
+      },
+      {
+        name: "delete",
+        args: "<id>",
+        description: "Delete a list",
+      },
+      {
+        name: "archive",
+        args: "<id>",
+        description: "Archive a list",
+      },
+      {
+        name: "unarchive",
+        args: "<id>",
+        description: "Unarchive a list",
+      },
     ],
     handler: async (client, flags, args) => {
       await listsCommand.execute(client, args, {
@@ -92,25 +132,39 @@ const COMMANDS: CommandDef[] = [
   {
     name: "tasks",
     description: "Manage RTM tasks and notes (list, add, complete, delete, notes)",
-    example: "rtm tasks [subcommand] [args] [flags]",
+    example: "rtm tasks [subcommand] [args]",
     flags: [
-      { name: "--json", description: "Output as JSON instead of markdown" },
-      { name: "--list <id>", description: "Filter by list ID" },
-      { name: "--status <s>", description: "pending, completed, all (default: pending)" },
-      { name: "--due <filter>", description: "today, tomorrow, week, overdue, none, all" },
-      { name: "--priority <p>", description: "1 (high), 2, 3, N (none), any" },
-      { name: "--tag <tag>", description: "Filter by tag (can repeat)" },
-      { name: "--filter <string>", description: "Raw RTM filter string" },
-      { name: "--sort <field>", description: "due, priority, name (default: due)" },
-      { name: "--limit <n>", description: "Max results" },
       { name: "--help, -h", description: "Show help for tasks subcommands" },
     ],
     subcommands: [
-      { name: "(none)", description: "List tasks with optional filters (default: pending only)" },
+      {
+        name: "(none)",
+        description: "List tasks with optional filters (default: pending only)",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+          { name: "--list <id>", description: "Filter by list ID" },
+          { name: "--status <s>", description: "pending, completed, all (default: pending)" },
+          { name: "--due <filter>", description: "today, tomorrow, week, overdue, none, all" },
+          { name: "--priority <p>", description: "1 (high), 2, 3, N (none), any" },
+          { name: "--tag <tag>", description: "Filter by tag (can repeat)" },
+          { name: "--filter <string>", description: "Raw RTM filter string" },
+          { name: "--sort <field>", description: "due, priority, name (default: due)" },
+          { name: "--limit <n>", description: "Max results" },
+        ],
+      },
       {
         name: "add",
         args: "<name>",
-        description: "Add new task with optional --list, --due, --priority, --tags, --estimate",
+        description: "Add new task",
+        flags: [
+          { name: "--list <id>", description: "List ID to add task to" },
+          { name: "--due <date>", description: "Due date (today, tomorrow, ISO, or smart date)" },
+          { name: "--time <time>", description: "Due time (HH:MM)" },
+          { name: "--priority <1|2|3|N>", description: "Task priority" },
+          { name: "--tags <t1,t2,...>", description: "Comma-separated tags" },
+          { name: "--estimate <time>", description: "Time estimate (e.g., '30 min', '1 hour')" },
+          { name: "--url <url>", description: "Associate URL with task" },
+        ],
       },
       { name: "done", args: "<id...>", description: "Complete task(s) by ID" },
       { name: "undo", args: "<id...>", description: "Uncomplete task(s) by ID" },
@@ -125,11 +179,18 @@ const COMMANDS: CommandDef[] = [
       {
         name: "due",
         args: "<date> <id...>",
-        description: "Set due date (use --time for time). Date: ISO, today, tomorrow",
+        description: "Set due date. Date: ISO, today, tomorrow",
       },
       { name: "tag", args: "<tag> <id...>", description: "Add tag to tasks" },
       { name: "untag", args: "<tag> <id...>", description: "Remove tag from tasks" },
-      { name: "notes", args: "<id>", description: "List notes for a task" },
+      {
+        name: "notes",
+        args: "<id>",
+        description: "List notes for a task",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+        ],
+      },
       {
         name: "note",
         args: "{add|delete|edit}",
@@ -145,19 +206,28 @@ const COMMANDS: CommandDef[] = [
   {
     name: "tags",
     description: "Manage RTM tags (list, rename, delete)",
-    example: "rtm tags [subcommand] [args] [--json]",
+    example: "rtm tags [subcommand] [args]",
     flags: [
-      { name: "--json", description: "Output as JSON instead of markdown" },
       { name: "--help, -h", description: "Show help for tags subcommands" },
     ],
     subcommands: [
-      { name: "(none)", description: "List all tags with task counts (default)" },
+      {
+        name: "(none)",
+        description: "List all tags with task counts (default)",
+        flags: [
+          { name: "--json", description: "Output as JSON instead of markdown" },
+        ],
+      },
       {
         name: "rename",
         args: "<old-name> <new-name>",
         description: "Rename a tag across all tasks",
       },
-      { name: "delete", args: "<name>", description: "Remove a tag from all tasks" },
+      {
+        name: "delete",
+        args: "<name>",
+        description: "Remove a tag from all tasks",
+      },
     ],
     handler: async (client, flags, args) => {
       await tagsCommand.execute(client, args, {
