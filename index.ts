@@ -3,6 +3,7 @@
  * RTM CLI - Remember The Milk Command Line Interface
  */
 
+import { VERSION } from "./src/version";
 import { RTMClient } from "./src/rtm";
 import * as listsCommand from "./src/commands/lists";
 import * as itemsCommand from "./src/commands/items";
@@ -138,7 +139,7 @@ const COMMANDS: CommandDef[] = [
     ],
     handler: async (client, flags, args) => {
       // Pass original argv for flag parsing, and processed args for subcommands
-      await itemsCommand.execute(client, args, flags, Bun.argv);
+      await itemsCommand.execute(client, args, flags);
     },
   },
   {
@@ -151,7 +152,11 @@ const COMMANDS: CommandDef[] = [
     ],
     subcommands: [
       { name: "(none)", description: "List all tags with task counts (default)" },
-      { name: "rename", args: "<old-name> <new-name>", description: "Rename a tag across all tasks" },
+      {
+        name: "rename",
+        args: "<old-name> <new-name>",
+        description: "Rename a tag across all tasks",
+      },
       { name: "delete", args: "<name>", description: "Remove a tag from all tasks" },
     ],
     handler: async (client, flags, args) => {
@@ -162,12 +167,13 @@ const COMMANDS: CommandDef[] = [
   },
 ];
 
-// Parse args: bun index.ts <command> [subcommand] [args...] [flags...]
+// Parse args: process.argv format -> [node, script, command, args..., flags...]
 function parseArgs(argv: string[]): {
   command: string | null;
   args: string[];
   flags: Set<string>;
 } {
+  // Skip first 2 elements: [node/bun executable, script path]
   const allArgs = argv.slice(2);
 
   if (allArgs.length === 0) {
@@ -193,7 +199,13 @@ function parseArgs(argv: string[]): {
 }
 
 async function main(): Promise<void> {
-  const { command, args, flags } = parseArgs(Bun.argv);
+  const { command, args, flags } = parseArgs(process.argv);
+
+  // Handle --version as first argument or global flag
+  if (command === "--version" || command === "-v" || flags.has("--version") || flags.has("-v")) {
+    console.log(VERSION);
+    process.exit(0);
+  }
 
   // Handle --help as first argument
   if (command === "--help" || command === "-h") {

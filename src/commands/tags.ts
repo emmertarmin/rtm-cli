@@ -135,7 +135,7 @@ export async function renameTag(
 
           // Remove old tag
           await client.removeTags(list.id, series.id, taskId, oldName, timeline);
-          
+
           // Only add new tag if task doesn't already have it (prevents duplicates when joining)
           if (!tags.includes(newName)) {
             await client.addTags(list.id, series.id, taskId, newName, timeline);

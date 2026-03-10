@@ -36,6 +36,7 @@ rtm items --list <list-id>
 ```
 
 **Strategy**: If a similar task exists, mention the fact to the user and either:
+
 - Update the existing task
 - Add clarifying tags or notes or distinct names to distinguish them (e.g., "Buy milk (weekly)" vs "Buy extra milk (party)")
 
@@ -44,11 +45,13 @@ rtm items --list <list-id>
 **ALWAYS confirm before deleting** - deletions are permanent.
 
 Ask the user:
+
 1. "Are you sure you want to delete '<task-name>'?"
 2. "Should I complete it instead of deleting?" (if it's done)
 3. For bulk deletions: "This will delete N tasks. Continue?"
 
 **Prefer archiving over deleting** for completed or no-longer-relevant tasks:
+
 ```bash
 rtm lists archive <list-id>   # Keep history, remove from active view
 ```
@@ -56,28 +59,33 @@ rtm lists archive <list-id>   # Keep history, remove from active view
 ### List Organization Principles
 
 **Limit list count** to 5-10 active lists to reduce cognitive load:
+
 - Personal, Work, Shopping, Household, Projects, Someday/Maybe
 - Archive old project lists rather than deleting
 
 **Use consistent naming conventions**:
+
 - Singular vs plural: pick one (e.g., all singular: "Work", "Home", "Shop")
 - Avoid generic names like "Tasks" or "Todo" - be specific
 
 ### Tag Strategy
 
 **Use tags for cross-cutting concerns** (not list replacements):
+
 - Context: `@home`, `@office`, `@phone`, `@computer`
 - Energy/Time: `quick`, `deep-work`, `15min`, `1hour`
 - People: `<name>`
 - Priority modifiers: `urgent`, `blocked`, `someday`
 
 **Tag hygiene**:
+
 - Consolidate similar tags (e.g., merge `buy` and `shopping`)
 - Delete unused tags to keep autocomplete useful
 
 ### Regular Maintenance Workflows
 
 **Weekly Review (15 minutes)**:
+
 ```bash
 # Stale tasks check
 rtm items --due before:today   # Overdue items - reschedule or drop
@@ -88,6 +96,7 @@ rtm tags | sort               # Look for duplicates to rename/merge
 ```
 
 **Monthly Consolidation**:
+
 ```bash
 # Find potential duplicates across all lists
 rtm items --status all | sort | uniq -d  # Manual review for dups
@@ -107,6 +116,7 @@ rtm lists archive <list-id>   # Archive, don't delete
 ### Priority Guidelines
 
 Don't overuse Priority 1 - it becomes meaningless:
+
 - Priority 1: Truly urgent/critical (deadline today/tomorrow, consequences if missed)
 - Priority 2: Important but not urgent (this week)
 - Priority 3: Should do soon (next 2 weeks)

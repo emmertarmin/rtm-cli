@@ -1,19 +1,50 @@
 {
   "name": "rtm",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "private": true,
-  "bin": {
-    "rtm": "./index.ts"
+  "description": "A CLI tool for Remember The Milk task management",
+  "keywords": [
+    "cli",
+    "productivity",
+    "remember-the-milk",
+    "rtm",
+    "task-management",
+    "todo"
+  ],
+  "homepage": "https://github.com/emmertarmin/rtm-cli#readme",
+  "bugs": {
+    "url": "https://github.com/emmertarmin/rtm-cli/issues"
   },
+  "license": "MIT",
+  "author": "Armin Emmert <emmertarmin@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emmertarmin/rtm-cli.git"
+  },
+  "bin": {
+    "rtm": "./dist/index.js"
+  },
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.d.ts"
+  ],
   "type": "module",
-  "module": "index.ts",
+  "main": "./dist/index.js",
   "scripts": {
-    "tsc": "tsc --noEmit",
-    "build": "bun build index.ts --outdir ./dist",
+    "prebuild": "bun -e \"import p from './package.json' with {type:'json'}; await Bun.write('src/version.ts', 'export const VERSION = \\\"' + p.version + '\\\";\\n')\"",
+    "build": "bun build index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly",
+    "tsc": "tsc --noEmit --emitDeclarationOnly false",
+    "prepublishOnly": "npm run build",
     "start": "bun run index.ts"
   },
+  "dependencies": {},
   "devDependencies": {
     "@types/bun": "latest",
-    "typescript": "^5"
+    "bun-types": "^1.3.10",
+    "typescript": "^5",
+    "undici-types": "^7.18.2"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
