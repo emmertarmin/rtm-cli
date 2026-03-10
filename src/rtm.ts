@@ -433,6 +433,26 @@ export class RTMClient {
       timeline,
     });
   }
+
+  /**
+   * Set URL on a task.
+   * Endpoint: rtm.tasks.setURL
+   */
+  async setURL(
+    listId: string,
+    taskSeriesId: string,
+    taskId: string,
+    url: string,
+    timeline: string,
+  ): Promise<void> {
+    await this.call("rtm.tasks.setURL", {
+      list_id: listId,
+      taskseries_id: taskSeriesId,
+      task_id: taskId,
+      url,
+      timeline,
+    });
+  }
 }
 
 // Re-export types for convenience

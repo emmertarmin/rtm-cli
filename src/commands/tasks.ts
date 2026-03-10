@@ -29,6 +29,7 @@ interface TaskDisplay {
   tags: string[];
   postponed: number;
   estimate?: string;
+  url?: string;
 }
 
 /**
@@ -84,6 +85,7 @@ function parseTasks(response: {
           tags,
           postponed: parseInt(task.postponed || "0", 10),
           estimate: task.estimate,
+          url: series.url,
         });
       }
     }
@@ -243,10 +245,11 @@ export function formatTasksAsMarkdown(tasks: TaskDisplay[]): string {
     const due = formatDue(task.due);
     const tags = task.tags.length > 0 ? ` #${task.tags.join(" #")}` : "";
     const postponed = task.postponed > 0 ? ` ↻${task.postponed}` : "";
+    const url = task.url ? ` \n  📎 ${task.url}` : "";
 
     markdown += `- ${checkbox} ${task.seriesId} ${task.name} | ${due}${
       priority.trim() ? ` | ${priority}` : ""
-    }${tags}${postponed}\n`;
+    }${tags}${postponed}${url}\n`;
   }
 
   return markdown;
@@ -273,6 +276,7 @@ export async function addTask(
     priority?: "1" | "2" | "3" | "N";
     tags?: string;
     estimate?: string;
+    url?: string;
     parse?: boolean;
   },
 ): Promise<TaskDisplay> {
@@ -297,6 +301,15 @@ export async function addTask(
     parse: shouldParse,
     timeline,
   });
+
+  // If URL was provided, set it on the newly created task
+  if (options.url && options.listId) {
+    const taskArray = Array.isArray(result.task) ? result.task : [result.task];
+    const firstTask = taskArray[0];
+    if (firstTask) {
+      await client.setURL(options.listId, result.id, firstTask.id, options.url, timeline);
+    }
+  }
 
   // Parse the task to return display format
   const taskArray = Array.isArray(result.task) ? result.task : [result.task];
@@ -325,6 +338,7 @@ export async function addTask(
     tags: tagsArray,
     postponed: 0,
     estimate: taskArray[0]?.estimate,
+    url: options.url,
   };
 }
 
@@ -489,6 +503,35 @@ export async function setPriority(
         continue;
       }
       await client.setPriority(task.listId, task.seriesId, task.taskId, priority, timeline);
+      succeeded.push(task.seriesId);
+    } catch (err) {
+      failed.push({ id, error: err instanceof Error ? err.message : String(err) });
+    }
+  }
+
+  return { succeeded, failed };
+}
+
+/**
+ * Set URL on tasks
+ */
+export async function setURLs(
+  client: RTMClient,
+  ids: string[],
+  url: string,
+): Promise<{ succeeded: string[]; failed: { id: string; error: string }[] }> {
+  const timeline = await client.createTimeline();
+  const succeeded: string[] = [];
+  const failed: { id: string; error: string }[] = [];
+
+  for (const id of ids) {
+    try {
+      const task = await findTask(client, id);
+      if (!task) {
+        failed.push({ id, error: "Task not found" });
+        continue;
+      }
+      await client.setURL(task.listId, task.seriesId, task.taskId, url, timeline);
       succeeded.push(task.seriesId);
     } catch (err) {
       failed.push({ id, error: err instanceof Error ? err.message : String(err) });
@@ -719,6 +762,7 @@ Subcommands:
   postpone <id...>        Postpone task(s) (+1 day)
   move <list-id> <task-id...>  Move tasks to list
   priority <1|2|3|N> <id...>   Set priority on tasks
+  url <url> <id...>   Set URL on task(s)
   due <date> <id...>  Set due date (ISO or "today", "tomorrow")
   tag <tag> <id...>   Add tag to tasks
   untag <tag> <id...> Remove tag from tasks
@@ -744,6 +788,7 @@ Add Flags:
   --priority <p>      Priority
   --tags <t1,t2>      Comma-separated tags
   --estimate <time>   Time estimate
+  --url <url>         Associate URL with task
   --parse             Enable smart add parsing
 
 Examples:
@@ -755,6 +800,7 @@ Examples:
   rtm tasks postpone 602989903
   rtm tasks move 43438794 602989903
   rtm tasks priority 1 602989903 602989904
+  rtm tasks url https://example.com 602989903
   rtm tasks notes 602989903
   rtm tasks note add 602989903 "Price check" "Found at MediaMarkt for 129€"
   rtm tasks note delete 123456789
@@ -845,6 +891,7 @@ export async function execute(
       "postpone",
       "move",
       "priority",
+      "url",
       "due",
       "tag",
       "untag",
@@ -886,6 +933,7 @@ export async function execute(
         priority: undefined,
         tags: undefined,
         estimate: undefined,
+        url: undefined,
         parse: flags.has("--parse"),
       };
 
@@ -911,6 +959,9 @@ export async function execute(
             break;
           case "--estimate":
             if (nextArg) addOptions.estimate = nextArg;
+            break;
+          case "--url":
+            if (nextArg) addOptions.url = nextArg;
             break;
         }
       }
@@ -1070,6 +1121,30 @@ export async function execute(
         console.log(JSON.stringify(result, null, 2));
       } else {
         console.log(`Set priority ${priority} on ${result.succeeded.length} task(s)`);
+        if (result.failed.length > 0) {
+          for (const f of result.failed) {
+            console.error(`  Failed ${f.id}: ${f.error}`);
+          }
+        }
+      }
+      break;
+    }
+
+    case "url": {
+      const url = args[1];
+      const ids = args.slice(2);
+      if (!url || ids.length === 0) {
+        console.error("Error: URL and task ID(s) required");
+        console.error("Usage: rtm tasks url <url> <id> [id...]");
+        process.exit(1);
+      }
+
+      const result = await setURLs(client, ids, url);
+
+      if (flags.has("--json")) {
+        console.log(JSON.stringify(result, null, 2));
+      } else {
+        console.log(`Set URL on ${result.succeeded.length} task(s)`);
         if (result.failed.length > 0) {
           for (const f of result.failed) {
             console.error(`  Failed ${f.id}: ${f.error}`);

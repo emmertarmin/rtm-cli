@@ -176,6 +176,7 @@ const COMMANDS: CommandDef[] = [
         description: "Move tasks to a different list",
       },
       { name: "priority", args: "<1|2|3|N> <id...>", description: "Set priority on tasks" },
+      { name: "url", args: "<url> <id...>", description: "Set URL on task(s)" },
       {
         name: "due",
         args: "<date> <id...>",
