@@ -31,6 +31,9 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "prebuild": "bun -e \"import p from './package.json' with {type:'json'}; await Bun.write('src/version.ts', 'export const VERSION = \\\"' + p.version + '\\\";\\n')\"",
     "build": "bun build index.ts --outdir ./dist --target node && tsc --emitDeclarationOnly",
