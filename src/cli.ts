@@ -45,7 +45,8 @@ export function formatCommandHelp(cmd: CommandDef): string {
   const lines: string[] = [];
   const aliases = cmd.aliases?.length ? ` (${cmd.aliases.join(", ")})` : "";
 
-  lines.push(`  ${cmd.name}${aliases}`);
+  // Show full command path as header
+  lines.push(`  rtm ${cmd.name}${aliases}`);
   lines.push(`    ${cmd.description}`);
 
   // Global command flags (shared across subcommands)
@@ -59,13 +60,12 @@ export function formatCommandHelp(cmd: CommandDef): string {
     }
   }
 
-  // Subcommands with their specific flags
+  // Subcommands with their specific flags - shown as indented tree
   if (cmd.subcommands && cmd.subcommands.length > 0) {
     lines.push("");
-    lines.push("  Subcommands:");
     for (const sub of cmd.subcommands) {
       const args = sub.args ? ` ${sub.args}` : "";
-      lines.push(`    ${sub.name}${args}`);
+      lines.push(`    rtm ${cmd.name} ${sub.name}${args}`);
       lines.push(`      ${sub.description}`);
       if (sub.flags && sub.flags.length > 0) {
         for (const flag of sub.flags) {
@@ -108,7 +108,7 @@ export function showCommandHelp(command: string, commands: CommandDef[]): void {
     process.exit(1);
   }
 
-  console.log(`Command: ${cmd.name}\n`);
+  console.log(`Command: rtm ${cmd.name}\n`);
   console.log(`Description: ${cmd.description}\n`);
   console.log(`Usage: ${cmd.example}\n`);
 
@@ -125,7 +125,7 @@ export function showCommandHelp(command: string, commands: CommandDef[]): void {
     console.log("Subcommands:");
     for (const sub of cmd.subcommands) {
       const args = sub.args ? ` ${sub.args}` : "";
-      console.log(`  ${sub.name}${args}`);
+      console.log(`  rtm ${cmd.name} ${sub.name}${args}`);
       console.log(`    ${sub.description}`);
       if (sub.flags && sub.flags.length > 0) {
         for (const flag of sub.flags) {

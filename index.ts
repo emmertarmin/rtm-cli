@@ -18,7 +18,7 @@ const COMMANDS: CommandDef[] = [
   {
     name: "auth",
     description:
-      "Manage RTM authentication and API credentials (init, login, complete, status, show, logout)",
+      "Manage RTM authentication and API credentials",
     example: "rtm auth <subcommand> [options]",
     flags: [],
     subcommands: [
@@ -76,7 +76,7 @@ const COMMANDS: CommandDef[] = [
   },
   {
     name: "lists",
-    description: "Manage RTM lists (list, add, rename, delete, archive, unarchive)",
+    description: "Manage RTM lists",
     example: "rtm lists [subcommand] [args]",
     flags: [
       { name: "--help, -h", description: "Show help for lists subcommands" },
@@ -131,7 +131,7 @@ const COMMANDS: CommandDef[] = [
   },
   {
     name: "tasks",
-    description: "Manage RTM tasks and notes (list, add, complete, delete, notes)",
+    description: "Manage RTM tasks and notes",
     example: "rtm tasks [subcommand] [args]",
     flags: [
       { name: "--help, -h", description: "Show help for tasks subcommands" },
@@ -205,7 +205,7 @@ const COMMANDS: CommandDef[] = [
   },
   {
     name: "tags",
-    description: "Manage RTM tags (list, rename, delete)",
+    description: "Manage RTM tags",
     example: "rtm tags [subcommand] [args]",
     flags: [
       { name: "--help, -h", description: "Show help for tags subcommands" },
